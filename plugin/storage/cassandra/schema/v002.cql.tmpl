@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS ${keyspace}.traces (
     flags           int,
     start_time      bigint,
     duration        bigint,
+    write_time      bigint,
     tags            list<frozen<keyvalue>>,
     logs            list<frozen<log>>,
     refs            list<frozen<span_ref>>,

@@ -35,8 +35,8 @@ const (
 	insertSpan = `
 		INSERT
 		INTO traces(trace_id, span_id, span_hash, parent_id, operation_name, flags,
-				    start_time, duration, tags, logs, refs, process)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+				    start_time, duration, write_time, tags, logs, refs, process)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	insertTag = `
 		INSERT
 		INTO tag_index(trace_id, span_id, service_name, start_time, tag_key, tag_value)
@@ -160,6 +160,7 @@ func (s *SpanWriter) writeSpan(span *model.Span, ds *dbmodel.Span) error {
 		ds.Flags,
 		ds.StartTime,
 		ds.Duration,
+		nowAsMicroseconds(),
 		ds.Tags,
 		ds.Logs,
 		ds.Refs,
@@ -169,6 +170,10 @@ func (s *SpanWriter) writeSpan(span *model.Span, ds *dbmodel.Span) error {
 		return s.logError(ds, err, "Failed to insert span", s.logger)
 	}
 	return nil
+}
+
+func nowAsMicroseconds() int64 {
+	return time.Now().UnixNano() / 1000
 }
 
 func (s *SpanWriter) writeIndexes(span *model.Span, ds *dbmodel.Span) error {
